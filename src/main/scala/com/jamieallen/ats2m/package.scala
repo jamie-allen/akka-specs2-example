@@ -22,4 +22,6 @@ package object ats2m {
 
   sealed trait CB_Message
   case class CB(value: Int) extends CB_Message
+
+  case class Blah(value: Int)
 }

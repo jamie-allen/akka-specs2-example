@@ -15,5 +15,7 @@ class A_Actor extends Actor {
       // println("Got CA message with value %d".format(y))
       ca_count += 1
       sender ! AC(ca_count)
+    case Blah(z) if z == 0 => throw new IllegalArgumentException("Got invalid data")
+    case Blah(z) => println("**** HERE ****"); sender ! Blah(z)
   }
 }
