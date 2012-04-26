@@ -25,46 +25,18 @@ class AkkaTestKitWithSpecs2AndMockito(_system: ActorSystem) extends TestKit(_sys
   "The actor system" should {
     "make a call into the ExternalService" in {
       def externalService = mock[ExternalService]
+      externalService.goDoSomething returns "Hello"
 
-      val errorKernel = _system.actorOf(Props(new ErrorKernel(externalService)))
-      errorKernel ! StartWorkers
-      Thread.sleep(3000)
-      there was one(externalService).goDoSomething
+      val a = system.actorOf(Props[A_Actor])
+      val b = system.actorOf(Props(new B_Actor(a)))
+      val c = system.actorOf(Props(new C_Actor(a, b, externalService)))
+
+      println("***** STARTING B *****")
+      b ! StartWorkers
+      println("***** STARTING C *****")
+      c ! StartWorkers
+      Thread.sleep(100)
+      there was atLeastOne(externalService).goDoSomething
     }
   }
-
-  //  def is = {
-  //    "This is a specification to check actor system side effects" ^
-  //      "The external service should" ^
-  //      "be eventually called" ! TestMocks().e1 ^
-  //      end
-  //
-  //    case class TestMocks() extends Mockito {
-  //      def externalService = mock[ExternalService]
-  //      def e1 = there was one(externalService).goDoSomething
-  //    }
-  //  }
-
-  // Need Specs2 BeforeAfter
-  //  override def afterAll {
-  //    system.shutdown()
-  //  }
-
-  //  val system = null
-  //
-  //  class InnerSpecification extends TestKit(system) {
-  //    val mockOfSomething = mock[ExternalService]
-  //
-  //    def someMethodUsingAkkaTestKit(): Example {
-  //      // do some things and also still enjoy the ability use Specs2 
-  //      todo
-  //    }
-  //  }
-  //
-  //  "My Specification" should {
-  //    "be able to pass a test involving Akka and Specs2" in {
-  //      val spec = new InnerSpecification()
-  //      spec.someMethodUsingAkkaTestKit()
-  //    }
-  //  }
 }
