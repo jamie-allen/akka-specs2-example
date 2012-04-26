@@ -4,11 +4,11 @@ import org.junit.runner.RunWith
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
+
 import akka.actor.Actor
 import akka.actor.ActorSystem
-import akka.testkit._
 import akka.actor.Props
-import akka.util.duration._
+import akka.testkit._
 
 /**
  * Required to fix implicit collision with TestKit duration
@@ -33,6 +33,7 @@ class AkkaTestKitWithSpecs2AndMockito(_system: ActorSystem) extends TestKit(_sys
       b ! StartWorkers
       c ! StartWorkers
       println("*** STARTED ACTORS ***")
+
       Thread.sleep(10)
       there was atLeastOne(externalService).goDoSomething
     }
