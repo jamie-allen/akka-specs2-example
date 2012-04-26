@@ -24,18 +24,16 @@ class AkkaTestKitWithSpecs2AndMockito(_system: ActorSystem) extends TestKit(_sys
 
   "The actor system" should {
     "make a call into the ExternalService" in {
-      def externalService = mock[ExternalService]
-      externalService.goDoSomething returns "Hello"
+      val externalService = mock[ExternalService].defaultReturn("Hello")
 
       val a = system.actorOf(Props[A_Actor])
       val b = system.actorOf(Props(new B_Actor(a)))
       val c = system.actorOf(Props(new C_Actor(a, b, externalService)))
 
-      println("***** STARTING B *****")
       b ! StartWorkers
-      println("***** STARTING C *****")
       c ! StartWorkers
-      Thread.sleep(100)
+      println("*** STARTED ACTORS ***")
+      Thread.sleep(10)
       there was atLeastOne(externalService).goDoSomething
     }
   }
