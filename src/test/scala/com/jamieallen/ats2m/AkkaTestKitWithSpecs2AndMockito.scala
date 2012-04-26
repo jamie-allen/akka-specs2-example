@@ -6,6 +6,7 @@ import org.specs2.mutable.Specification
 import org.specs2.runner.JUnitRunner
 
 import akka.actor.Actor
+import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.testkit._
@@ -36,5 +37,25 @@ class AkkaTestKitWithSpecs2AndMockito(_system: ActorSystem) extends TestKit(_sys
       val a = TestActorRef[A_Actor]
       a.receive(Blah(0)) must throwAn[IllegalArgumentException]
     }
+
+    "get the value I want" in {
+      val a = TestActorRef[A_Actor]
+      val sender = TestActorRef(new SendingActor(a))
+      sender.underlyingActor.sendMessage
+
+      sender.underlyingActor.expectedResult must beEqualTo(1)
+    }
   }
+
+  class SendingActor(a: TestActorRef[A_Actor]) extends Actor {
+    var _expectedResult = 0
+    def expectedResult = _expectedResult
+    def receive = {
+      case Blah(1) => _expectedResult = 1
+      case Blah(x) => println("Got weird results: " + x)
+    }
+
+    def sendMessage = a ! Blah(1)
+  }
+
 }
